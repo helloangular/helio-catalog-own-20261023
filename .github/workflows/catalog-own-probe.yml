@@ -1,0 +1,16 @@
+name: cown-probe
+run-name: Owned catalog lane reviewer readiness probe
+# Owned catalog lane (23 Oct 2026): a run that waits at the protected environment cown-probe
+# (required reviewer: the lane's technical reviewer) proves the connection's gate profile.
+# Never approved; cancelled by the operator after the connection is ready.
+on:
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  probe:
+    environment: cown-probe
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - run: echo "Owned catalog lane readiness probe; nothing is deployed."
