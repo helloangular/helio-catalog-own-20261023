@@ -1,0 +1,38 @@
+name: cown-catalog-mixed
+run-name: ${{ inputs.helio_execution_id || format('Owned catalog lane mixed release {0}', github.sha) }}
+# Owned catalog lane (23 Oct 2026): mixed caller for BM-ENV-12. Its own team environment
+# cown-team-qa (governed by the service binding's onboarding approvers) runs first, then the
+# central catalog template deploys the catalog preprod/production environments. No real deployment.
+on:
+  workflow_dispatch:
+    inputs:
+      helio_execution_id:
+        type: string
+        required: false
+        default: ''
+      helio_target_environment:
+        type: string
+        required: false
+        default: ''
+permissions:
+  contents: read
+jobs:
+  team-qa:
+    name: team qa
+    if: ${{ inputs.helio_target_environment == '' }}
+    environment: cown-team-qa
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Synthetic team qa deployment
+        shell: bash
+        run: |
+          echo "Synthetic team qa deployment of ${GITHUB_SHA}; no application is deployed."
+          sleep 20
+  deploy:
+    needs: [team-qa]
+    if: ${{ !failure() && !cancelled() }}
+    uses: helloangular/helio-client-capacity-20260916/.github/workflows/catalog-own-deploy.yml@catalog-own-20261023
+    with:
+      helio_execution_id: ${{ inputs.helio_execution_id || '' }}
+      helio_target_environment: ${{ inputs.helio_target_environment || '' }}
