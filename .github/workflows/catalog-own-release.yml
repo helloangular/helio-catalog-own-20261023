@@ -20,3 +20,4 @@ jobs:
     uses: helloangular/helio-client-capacity-20260916/.github/workflows/catalog-own-deploy.yml@catalog-own-20261023
     with:
       helio_execution_id: ${{ inputs.helio_execution_id || '' }}
+      helio_target_environment: ${{ inputs.helio_target_environment || '' }}
